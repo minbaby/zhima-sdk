@@ -1,6 +1,7 @@
 <?php
 namespace Minbaby\Zhima;
 
+use Minbaby\Zhima\Exception\NetworkException;
 use Minbaby\Zhima\Exception\RSAValidException;
 use Minbaby\Zhima\Exception\ZhimaException;
 use Minbaby\Zhima\Request\Request;
@@ -80,13 +81,7 @@ class ZmopClient
         try {
             $resp = WebUtil::curl($requestUrl, $encryptedApiParams, $this->charset);
         } catch (\Exception $e) {
-            $this->logCommunicationError(
-                $sysParams["method"],
-                $requestUrl,
-                "HTTP_ERROR_" . $e->getCode(),
-                $e->getMessage()
-            );
-            return false;
+            throw new NetworkException($e->getCode(), "url: {$requestUrl} msg:" . $e->getMessage());
         }
 
         //解析ZMOP返回结果
